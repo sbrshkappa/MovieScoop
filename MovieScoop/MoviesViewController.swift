@@ -8,10 +8,14 @@
 
 import UIKit
 import Foundation
+import AFNetworking
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var movieTableView: UITableView!
+    
+    var movies: [NSDictionary] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -23,9 +27,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         let postData = NSData(data: "{}".data(using: String.Encoding.utf8)!)
         let api_key = "98bc99e2be55777e277457b3de72dc05"
-        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(api_key)")! as URL,
-                                          cachePolicy: .useProtocolCachePolicy,
-                                          timeoutInterval: 10.0)
+        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(api_key)")! as URL, cachePolicy: .useProtocolCachePolicy,timeoutInterval: 10.0)
         request.httpMethod = "GET"
         request.httpBody = postData as Data
         
@@ -37,6 +39,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 if let respData = data {
                     if let responseDictionary = try!JSONSerialization.jsonObject(with: respData, options: []) as? NSDictionary {
                         print("response: \(responseDictionary)")
+                        
+                        self.movies = responseDictionary["results"] as! [NSDictionary]
+                        self.movieTableView.reloadData()
                     }
                 }
             }
@@ -50,15 +55,48 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         // Dispose of any resources that can be recreated.
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return movies.count
+    }
+    
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return 1
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = movieTableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath)
-        cell.textLabel?.text = "row \(indexPath.row)"
-        print ("row \(indexPath.row)")
-        return cell
+        let cell = movieTableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
+        //Get individual movie JSON
+        
+        if (movies.count != 0){
+        
+            let movie = movies[indexPath.section]
+        
+            //get Movie Title, imageURL, etc
+            let movieTitle = movie.value(forKeyPath: "original_title") as? String
+            let movieOverview = movie.value(forKeyPath: "overview") as? String
+            let movieBackgroundImagePath = movie.value(forKeyPath: "poster_path") as? String
+            let movieBackgroundImageURL = "http://image.tmdb.org/t/p/w185" + movieBackgroundImagePath!
+            
+            
+            //setting the movieLabel in the Cell
+            cell.movieCellLabel.text = movieTitle
+            
+            //setting the movieOverview in the Cell
+            cell.movieCellOveriew.text = movieOverview
+            
+            //setting the imageView in the Cell
+            if let realMovieBackgroundImageURL = URL(string: movieBackgroundImageURL) {
+                cell.movieImageView.setImageWith(realMovieBackgroundImageURL)
+            } else {
+                //image did not load successfully
+                print("Not displaying image")
+            }
+            return cell
+        } else {
+            //No Movies were Returned
+            cell.textLabel?.text = "Something went Wrong!"
+            return cell
+        }
     }
 
     /*
