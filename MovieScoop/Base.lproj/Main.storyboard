@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES" initialViewController="4UR-GA-MhZ">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -22,11 +22,11 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MovieCell" rowHeight="199" id="Qbk-h0-q3l" customClass="MovieCell" customModule="MovieScoop" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="MovieCell" rowHeight="199" id="Qbk-h0-q3l" customClass="MovieCell" customModule="MovieScoop" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="199"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Qbk-h0-q3l" id="Hdn-9D-TjM">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="198.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="198"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="dgD-Xh-bxF">
@@ -54,6 +54,7 @@
                                             <outlet property="movieCellLabel" destination="C2b-e2-y9z" id="v8y-bx-cpy"/>
                                             <outlet property="movieCellOveriew" destination="jQO-mI-ec3" id="qAZ-DI-f2R"/>
                                             <outlet property="movieImageView" destination="dgD-Xh-bxF" id="BDu-cn-Pkx"/>
+                                            <segue destination="qoN-Jx-Ac5" kind="push" id="qh4-cD-dSJ"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -61,11 +62,54 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <navigationItem key="navigationItem" id="DXR-uf-g7E"/>
                     <connections>
                         <outlet property="movieTableView" destination="EvQ-ex-6pP" id="Vqa-xJ-lY2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="672.5" y="154.5"/>
+        </scene>
+        <!--Movies Detail View Controller-->
+        <scene sceneID="XlQ-ia-DQJ">
+            <objects>
+                <viewController id="qoN-Jx-Ac5" customClass="MoviesDetailViewController" customModule="MovieScoop" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="4CF-ve-FvN">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="Rra-AP-zaC">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Sxv-Bu-iuV"/>
+                    <connections>
+                        <outlet property="movieDetailImageView" destination="Rra-AP-zaC" id="up3-c0-jpc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FuH-vG-c8S" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1223.5" y="147.5"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Vzc-Td-bJO">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4UR-GA-MhZ" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="mim-Je-DTf">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="dFp-GR-EzW"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LSc-ME-iSx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="85.5" y="154.5"/>
         </scene>

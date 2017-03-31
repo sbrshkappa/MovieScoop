@@ -98,7 +98,20 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             return cell
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        movieTableView.deselectRow(at: indexPath, animated: true)
+    }
 
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let detailView = segue.destination as! MoviesDetailViewController
+        let indexPath = movieTableView.indexPath(for: sender as! UITableViewCell)!
+        
+        let movieImageBaseURL = "http://image.tmdb.org/t/p/w342"
+        let movieImageURL = movies[indexPath.section].value(forKeyPath: "poster_path") as? String
+        detailView.imageURL = movieImageBaseURL + movieImageURL!
+    }
     /*
     // MARK: - Navigation
 
