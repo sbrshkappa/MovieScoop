@@ -101,35 +101,32 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func refreshControlAction(_ refreshControl: UIRefreshControl) {
         networkRequest()
+        self.refreshControl.endRefreshing()
     }
     
     func networkRequest () {
-        let postData = NSData(data: "{}".data(using: String.Encoding.utf8)!)
+        
         let api_key = "98bc99e2be55777e277457b3de72dc05"
-        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(api_key)")! as URL, cachePolicy: .useProtocolCachePolicy,timeoutInterval: 10.0)
-        request.httpMethod = "GET"
-        request.httpBody = postData as Data
-        
-        let session = URLSession.shared
-        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            if let httpError = error {
-                print("\(httpError)")
-            } else {
-                if let respData = data {
-                    if let responseDictionary = try!JSONSerialization.jsonObject(with: respData, options: []) as? NSDictionary {
-                        print("response: \(responseDictionary)")
-                        
-                        self.movies = responseDictionary["results"] as! [NSDictionary]
-                        self.movieTableView.reloadData()
-                        self.refreshControl.endRefreshing()
-                    }
-                } else {
-                    print("There was a network error")
+        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(api_key)")
+        let request = URLRequest(url: url!, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
+        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: OperationQueue.main)
+       
+        let task : URLSessionDataTask = session.dataTask(
+            with: request as URLRequest,
+            completionHandler: {(data, response, error) in
+            
+            if let data = data {
+                if let responseDictionary = try!JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
+                    print("response: \(responseDictionary)")
+                    
+                    self.movies = responseDictionary["results"] as! [NSDictionary]
+                    self.movieTableView.reloadData()
                 }
+            } else {
+                print("There was a network error!")
             }
-        })
-        
-        dataTask.resume()
+        });
+        task.resume()
     }
     /*
     // MARK: - Navigation
