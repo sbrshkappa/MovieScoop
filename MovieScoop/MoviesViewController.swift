@@ -14,15 +14,17 @@ import MBProgressHUD
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var movieTableView: UITableView!
-    
+    @IBOutlet weak var networkErrorView: UIView!
     var movies: [NSDictionary] = []
     var endpoint: String?
     var refreshControl: UIRefreshControl!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.networkErrorView.isHidden = true
         
         movieTableView.dataSource = self
         movieTableView.delegate = self
@@ -66,10 +68,29 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 let movieBackgroundImageURL = "http://image.tmdb.org/t/p/w185" + movieBackgroundImagePath
                 //setting the imageView in the Cell
                 if let realMovieBackgroundImageURL = URL(string: movieBackgroundImageURL) {
-                    cell.movieImageView.setImageWith(realMovieBackgroundImageURL)
+                    //cell.movieImageView.setImageWith(realMovieBackgroundImageURL)
+                    let imageRequest = URLRequest(url: realMovieBackgroundImageURL)
+                    cell.movieImageView.setImageWith(imageRequest,
+                                                     placeholderImage: nil,
+                                                     success: {(imageRequest, imageResponse, image) -> Void in
+                                                        if imageResponse != nil {
+                                                            print("Image not Cached, fading in image")
+                                                            cell.movieImageView.alpha = 0.0
+                                                            cell.movieImageView.image = image
+                                                            UIView.animate(withDuration: 0.3, animations: {() -> Void in
+                                                                cell.movieImageView.alpha = 1.0
+                                                            })
+                                                        } else {
+                                                            print("Image was cached, so just updated the image")
+                                                            cell.movieImageView.image = image
+                                                        }
+                                                     },
+                                                     failure: {(imageRequest, imageResponse, error) -> Void in
+                                                        print("There was an error fetching the image!")
+                                                     })
                 } else {
                     //image did not load successfully
-                    print("Not displaying image")
+                    print("The image URL was messed up!")
                 }
             }
             //setting the movieLabel in the Cell
@@ -127,6 +148,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 }
             } else {
                 print("There was a network error!")
+                self.networkErrorView.isHidden = false
             }
         });
         task.resume()

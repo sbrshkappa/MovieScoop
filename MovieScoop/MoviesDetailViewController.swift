@@ -34,8 +34,28 @@ class MoviesDetailViewController: UIViewController {
         
         if let imageURL = movie!["poster_path"] as? String {
             let realImageURL = URL(string: baseImageURL+imageURL)
-            movieDetailImageView.setImageWith(realImageURL!)
-        }
+            let imageRequest = URLRequest(url: realImageURL!)
+            movieDetailImageView.setImageWith(imageRequest,
+                                             placeholderImage: nil,
+                                             success: {(imageRequest, imageResponse, image) -> Void in
+                                                if imageResponse != nil {
+                                                    print("Image not Cached, fading in image")
+                                                    self.movieDetailImageView.alpha = 0.0
+                                                    self.movieDetailImageView.image = image
+                                                    UIView.animate(withDuration: 0.3, animations: {() -> Void in
+                                                        self.movieDetailImageView.alpha = 1.0
+                                                    })
+                                                } else {
+                                                    print("Image was cached, so just updated the image")
+                                                    self.movieDetailImageView.image = image
+                                                }
+                                            },
+                                             failure: {(imageRequest, imageResponse, error) -> Void in
+                                                print("There was an error fetching the image!")
+                                            })
+
+            //movieDetailImageView.setImageWith(realImageURL!)
+          }
         
         movieTitleLabel.text = movieTitleString
         movieOverviewLabel.text = movieOverviewString
