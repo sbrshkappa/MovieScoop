@@ -16,6 +16,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     var movies: [NSDictionary] = []
     var endpoint: String?
+    var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,36 +26,20 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         movieTableView.dataSource = self
         movieTableView.delegate = self
         
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
+        movieTableView.insertSubview(refreshControl, at: 0)
         
-        let postData = NSData(data: "{}".data(using: String.Encoding.utf8)!)
-        let api_key = "98bc99e2be55777e277457b3de72dc05"
-        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(api_key)")! as URL, cachePolicy: .useProtocolCachePolicy,timeoutInterval: 10.0)
-        request.httpMethod = "GET"
-        request.httpBody = postData as Data
+        networkRequest()
         
-        let session = URLSession.shared
-        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            if let httpError = error {
-                print("\(httpError)")
-            } else {
-                if let respData = data {
-                    if let responseDictionary = try!JSONSerialization.jsonObject(with: respData, options: []) as? NSDictionary {
-                        print("response: \(responseDictionary)")
-                        
-                        self.movies = responseDictionary["results"] as! [NSDictionary]
-                        self.movieTableView.reloadData()
-                    }
-                }
-            }
-        })
-        
-        dataTask.resume()
+       
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return movies.count
@@ -112,6 +97,39 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         //Sending the whole movie object
         let movie = movies[indexPath.section]
         detailView.movie = movie
+    }
+    
+    func refreshControlAction(_ refreshControl: UIRefreshControl) {
+        networkRequest()
+    }
+    
+    func networkRequest () {
+        let postData = NSData(data: "{}".data(using: String.Encoding.utf8)!)
+        let api_key = "98bc99e2be55777e277457b3de72dc05"
+        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(api_key)")! as URL, cachePolicy: .useProtocolCachePolicy,timeoutInterval: 10.0)
+        request.httpMethod = "GET"
+        request.httpBody = postData as Data
+        
+        let session = URLSession.shared
+        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+            if let httpError = error {
+                print("\(httpError)")
+            } else {
+                if let respData = data {
+                    if let responseDictionary = try!JSONSerialization.jsonObject(with: respData, options: []) as? NSDictionary {
+                        print("response: \(responseDictionary)")
+                        
+                        self.movies = responseDictionary["results"] as! [NSDictionary]
+                        self.movieTableView.reloadData()
+                        self.refreshControl.endRefreshing()
+                    }
+                } else {
+                    print("There was a network error")
+                }
+            }
+        })
+        
+        dataTask.resume()
     }
     /*
     // MARK: - Navigation
