@@ -9,6 +9,7 @@
 import UIKit
 import Foundation
 import AFNetworking
+import MBProgressHUD
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -30,6 +31,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
         movieTableView.insertSubview(refreshControl, at: 0)
         
+        MBProgressHUD.showAdded(to: self.view, animated: true)
         networkRequest()
         
        
@@ -116,6 +118,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             completionHandler: {(data, response, error) in
             
             if let data = data {
+                MBProgressHUD.hide(for: self.view, animated: true)
                 if let responseDictionary = try!JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print("response: \(responseDictionary)")
                     
