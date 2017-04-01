@@ -15,6 +15,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var movieTableView: UITableView!
     
     var movies: [NSDictionary] = []
+    var endpoint: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +28,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         let postData = NSData(data: "{}".data(using: String.Encoding.utf8)!)
         let api_key = "98bc99e2be55777e277457b3de72dc05"
-        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(api_key)")! as URL, cachePolicy: .useProtocolCachePolicy,timeoutInterval: 10.0)
+        let request = NSMutableURLRequest(url: NSURL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(api_key)")! as URL, cachePolicy: .useProtocolCachePolicy,timeoutInterval: 10.0)
         request.httpMethod = "GET"
         request.httpBody = postData as Data
         
@@ -74,23 +75,23 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             //get Movie Title, imageURL, etc
             let movieTitle = movie.value(forKeyPath: "original_title") as? String
             let movieOverview = movie.value(forKeyPath: "overview") as? String
-            let movieBackgroundImagePath = movie.value(forKeyPath: "poster_path") as? String
-            let movieBackgroundImageURL = "http://image.tmdb.org/t/p/w185" + movieBackgroundImagePath!
-            
-            
+            if let movieBackgroundImagePath = movie.value(forKeyPath: "poster_path") as? String{
+                let movieBackgroundImageURL = "http://image.tmdb.org/t/p/w185" + movieBackgroundImagePath
+                //setting the imageView in the Cell
+                if let realMovieBackgroundImageURL = URL(string: movieBackgroundImageURL) {
+                    cell.movieImageView.setImageWith(realMovieBackgroundImageURL)
+                } else {
+                    //image did not load successfully
+                    print("Not displaying image")
+                }
+            }
             //setting the movieLabel in the Cell
             cell.movieCellLabel.text = movieTitle
             
             //setting the movieOverview in the Cell
             cell.movieCellOveriew.text = movieOverview
             
-            //setting the imageView in the Cell
-            if let realMovieBackgroundImageURL = URL(string: movieBackgroundImageURL) {
-                cell.movieImageView.setImageWith(realMovieBackgroundImageURL)
-            } else {
-                //image did not load successfully
-                print("Not displaying image")
-            }
+            
             return cell
         } else {
             //No Movies were Returned
@@ -108,9 +109,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let detailView = segue.destination as! MoviesDetailViewController
         let indexPath = movieTableView.indexPath(for: sender as! UITableViewCell)!
         
-        let movieImageBaseURL = "http://image.tmdb.org/t/p/w342"
-        let movieImageURL = movies[indexPath.section].value(forKeyPath: "poster_path") as? String
-        detailView.imageURL = movieImageBaseURL + movieImageURL!
+        //Sending the whole movie object
+        let movie = movies[indexPath.section]
+        detailView.movie = movie
     }
     /*
     // MARK: - Navigation
