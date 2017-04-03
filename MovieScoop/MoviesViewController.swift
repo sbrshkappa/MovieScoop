@@ -18,7 +18,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var movieCollectionView: UICollectionView!
     @IBOutlet weak var movieSearchBar: UISearchBar!
-    
+    @IBOutlet weak var movieViewSegmentedControl: UISegmentedControl!
     
     
     var movies: [NSDictionary] = []
@@ -29,8 +29,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
         
         self.movieTableView.isHidden = true
         self.movieCollectionView.isHidden = false
@@ -51,13 +49,31 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
         networkRequest()
-        
-       
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if (movieViewSegmentedControl.selectedSegmentIndex == 0){
+            movieTableView.isHidden = false;
+            movieCollectionView.isHidden = true;
+        } else if (movieViewSegmentedControl.selectedSegmentIndex == 1){
+            movieCollectionView.isHidden = false;
+            movieTableView.isHidden = true;
+        }
+    }
+    
+    @IBAction func toggleView(_ sender: Any) {
+        if (movieViewSegmentedControl.selectedSegmentIndex == 0){
+            movieTableView.isHidden = false;
+            movieCollectionView.isHidden = true;
+        } else if (movieViewSegmentedControl.selectedSegmentIndex == 1){
+            movieCollectionView.isHidden = false;
+            movieTableView.isHidden = true;
+        }
     }
     
     
@@ -215,13 +231,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         if(segue.identifier == "TableViewSegue"){
             let indexPath = movieTableView.indexPath(for: sender as! UITableViewCell)!
             //Sending the whole movie object
-            let movie = movies[indexPath.section] 
+            let movie = filteredData[indexPath.section]
             let detailView = segue.destination as! MoviesDetailViewController
             detailView.movie = movie
         } else if(segue.identifier == "CollectionViewSegue"){
             let indexPath = movieCollectionView.indexPath(for: sender as! CollectionMovieCell)!
             //Sending the whole movie object
-            let movie = movies[indexPath.row]
+            let movie = filteredData[indexPath.row]
             print(movie)
             let detailView = segue.destination as! MoviesDetailViewController
             detailView.movie = movie
