@@ -11,10 +11,11 @@ import Foundation
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var movieTableView: UITableView!
     @IBOutlet weak var networkErrorView: UIView!
+    @IBOutlet weak var movieCollectionView: UICollectionView!
     var movies: [NSDictionary] = []
     var endpoint: String?
     var refreshControl: UIRefreshControl!
@@ -22,6 +23,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.movieTableView.isHidden = true
+        self.movieCollectionView.isHidden = false
 
         // Do any additional setup after loading the view.
         self.networkErrorView.isHidden = true
@@ -29,9 +33,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         movieTableView.dataSource = self
         movieTableView.delegate = self
         
+        movieCollectionView.dataSource = self
+        movieCollectionView.delegate = self
+        
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
         movieTableView.insertSubview(refreshControl, at: 0)
+        movieCollectionView.insertSubview(refreshControl, at: 0)
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
         networkRequest()
@@ -44,6 +52,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         // Dispose of any resources that can be recreated.
     }
     
+    
+    // Table View Delegates 
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return movies.count
@@ -111,15 +121,78 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         movieTableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    // CollectionView Delegates
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return movies.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionMovieCell", for: indexPath as IndexPath) as! CollectionMovieCell
+        /*print("Printing a Cell")
+        return cell*/
+        
+        if( movies.count != 0){
+            
+            let movie = movies[indexPath.row]
+            //Get Movie Image
+            if let moviePoster = movie["poster_path"] as? String{
+                let imageURL = URL(string: "https://image.tmdb.org/t/p/w92" + moviePoster)
+                let imageRequest = URLRequest(url: imageURL!)
+                cell.movieImageView.setImageWith(imageRequest, placeholderImage: nil,
+                                                 success: {(imageRequest, imageResponse, image) -> Void in
+                                                    if imageResponse != nil{
+                                                        print("Image not Cached, fading in Image")
+                                                        cell.movieImageView.alpha = 0.0
+                                                        cell.movieImageView.image = image
+                                                        UIView.animate(withDuration: 0.3, animations: {() -> Void in
+                                                          cell.movieImageView.alpha = 1.0
+                                                        })
+                                                    } else {
+                                                        print("Image was cached, no need to Fade it in!")
+                                                        cell.movieImageView.image = image
+                                                    }
+                                                },
+                                                failure: {(imageRequest, imageResponse, error) -> Void in
+                                                    print("There was an error in fetching the image!")
+                                                })
+            } else {
+                print("The image URL was messed up!")
+            }
+            return cell
+        } else {
+            print("Something went wrong!")
+            return cell
+        }
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 4
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 1
+    }
 
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let detailView = segue.destination as! MoviesDetailViewController
-        let indexPath = movieTableView.indexPath(for: sender as! UITableViewCell)!
         
-        //Sending the whole movie object
-        let movie = movies[indexPath.section]
-        detailView.movie = movie
+        if(segue.identifier == "TableViewSegue"){
+            let indexPath = movieTableView.indexPath(for: sender as! UITableViewCell)!
+            //Sending the whole movie object
+            let movie = movies[indexPath.section] 
+            let detailView = segue.destination as! MoviesDetailViewController
+            detailView.movie = movie
+        } else if(segue.identifier == "CollectionViewSegue"){
+            let indexPath = movieCollectionView.indexPath(for: sender as! CollectionMovieCell)!
+            //Sending the whole movie object
+            let movie = movies[indexPath.row]
+            print(movie)
+            let detailView = segue.destination as! MoviesDetailViewController
+            detailView.movie = movie
+        }
     }
     
     func refreshControlAction(_ refreshControl: UIRefreshControl) {
@@ -145,6 +218,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     
                     self.movies = responseDictionary["results"] as! [NSDictionary]
                     self.movieTableView.reloadData()
+                    self.movieCollectionView.reloadData()
                 }
             } else {
                 print("There was a network error!")
