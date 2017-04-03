@@ -11,18 +11,26 @@ import Foundation
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UISearchBarDelegate {
+    
+    //Outlets
     @IBOutlet weak var movieTableView: UITableView!
     @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var movieCollectionView: UICollectionView!
+    @IBOutlet weak var movieSearchBar: UISearchBar!
+    
+    
+    
     var movies: [NSDictionary] = []
     var endpoint: String?
     var refreshControl: UIRefreshControl!
+    var filteredData: [NSDictionary] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         
         self.movieTableView.isHidden = true
         self.movieCollectionView.isHidden = false
@@ -32,9 +40,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         movieTableView.dataSource = self
         movieTableView.delegate = self
-        
         movieCollectionView.dataSource = self
         movieCollectionView.delegate = self
+        movieSearchBar.delegate = self
         
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
@@ -56,7 +64,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     // Table View Delegates 
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return movies.count
+        return filteredData.count
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -69,7 +77,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         if (movies.count != 0){
         
-            let movie = movies[indexPath.section]
+            let movie = filteredData[indexPath.section]
         
             //get Movie Title, imageURL, etc
             let movieTitle = movie.value(forKeyPath: "original_title") as? String
@@ -125,7 +133,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     // CollectionView Delegates
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movies.count
+        return filteredData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -133,9 +141,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         /*print("Printing a Cell")
         return cell*/
         
-        if( movies.count != 0){
+        if( filteredData.count != 0){
             
-            let movie = movies[indexPath.row]
+            let movie = filteredData[indexPath.row]
             //Get Movie Image
             if let moviePoster = movie["poster_path"] as? String{
                 let imageURL = URL(string: "https://image.tmdb.org/t/p/w92" + moviePoster)
@@ -175,7 +183,32 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
+    
+    //SearchBar Delegates
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        self.movieSearchBar.showsCancelButton = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.movieSearchBar.showsCancelButton = false
+        movieSearchBar.text = ""
+        movieSearchBar.resignFirstResponder()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    }
 
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredData = searchText.isEmpty ? movies : movies.filter(){(movie: NSDictionary) -> Bool in
+            return (movie["title"] as? String)?.range(of: searchText, options: .caseInsensitive) != nil
+        }
+        movieTableView.reloadData()
+        movieCollectionView.reloadData()
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
@@ -217,6 +250,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     print("response: \(responseDictionary)")
                     
                     self.movies = responseDictionary["results"] as! [NSDictionary]
+                    self.filteredData = self.movies
                     self.movieTableView.reloadData()
                     self.movieCollectionView.reloadData()
                 }
