@@ -28,7 +28,7 @@ class MoviesDetailViewController: UIViewController {
         
         movieDetailScrollView.contentSize = CGSize(width: movieDetailScrollView.frame.size.width, height: movieInfoView.frame.origin.y + movieInfoView.frame.size.height)
         
-        let baseImageURL = "http://image.tmdb.org/t/p/w500"
+        let baseImageURL = "http://image.tmdb.org/t/p/w342"
         let movieTitleString = movie!["original_title"] as! String
         let movieOverviewString = movie!["overview"] as! String
         
@@ -44,6 +44,15 @@ class MoviesDetailViewController: UIViewController {
                                                     self.movieDetailImageView.image = image
                                                     UIView.animate(withDuration: 0.3, animations: {() -> Void in
                                                         self.movieDetailImageView.alpha = 1.0
+                                                    },
+                                                    completion: {(success) -> Void in
+                                                        let highResImageURL = URL(string: "http://image.tmdb.org/t/p/w500" + imageURL)
+                                                        let highResImageRequest = URLRequest(url: highResImageURL!)
+                                                        self.movieDetailImageView.setImageWith(highResImageRequest,
+                                                            placeholderImage: image,
+                                                            success: {(highResImageRequest, highResImageResponse, highResImage) -> Void in
+                                                                self.movieDetailImageView.image = highResImage
+                                                        }, failure: {(highResImageRequest, highResImageResponse, error) -> Void in })
                                                     })
                                                 } else {
                                                     print("Image was cached, so just updated the image")

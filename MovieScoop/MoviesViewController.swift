@@ -49,6 +49,16 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         MBProgressHUD.showAdded(to: self.view, animated: true)
         networkRequest()
+        
+        //Customizing  Navigation Title
+        
+        if let navigationBar = navigationController?.navigationBar {
+            let shadowForTitle = NSShadow()
+            shadowForTitle.shadowColor = UIColor.darkGray
+            shadowForTitle.shadowOffset = CGSize(width: 2, height: 2)
+            shadowForTitle.shadowBlurRadius = 5
+            navigationBar.titleTextAttributes = [NSShadowAttributeName: shadowForTitle]
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -113,6 +123,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                                                             cell.movieImageView.image = image
                                                             UIView.animate(withDuration: 0.3, animations: {() -> Void in
                                                                 cell.movieImageView.alpha = 1.0
+                                                            },
+                                                            completion: {(success) -> Void in
+                                                                let highResImageURL = URL(string: "http://image.tmdb.org/t/p/w342" + movieBackgroundImagePath)
+                                                                let highResImageRequest = URLRequest(url: highResImageURL!)
+                                                                cell.movieImageView.setImageWith(highResImageRequest, placeholderImage: image,
+                                                                   success: {(highResImageRequest, highResImageResponse, highResImage) -> Void in
+                                                                        cell.movieImageView.image = highResImage
+                                                                    },
+                                                                   failure: {(highResImageRequest, highResImageResponse, error) -> Void in })
                                                             })
                                                         } else {
                                                             print("Image was cached, so just updated the image")
@@ -172,6 +191,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                                                         cell.movieImageView.image = image
                                                         UIView.animate(withDuration: 0.3, animations: {() -> Void in
                                                           cell.movieImageView.alpha = 1.0
+                                                        },
+                                                        completion: { (success) -> Void in
+                                                            let highResImageURL = URL(string: "https://image.tmdb.org/t/p/w342" + moviePoster)
+                                                            let highResImageRequest = URLRequest(url: highResImageURL!)
+                                                            cell.movieImageView.setImageWith(highResImageRequest,
+                                                               placeholderImage: image,
+                                                               success: {(highResImageRequest, highResImageResponse, highResImage) -> Void in
+                                                                cell.movieImageView.image = highResImage
+                                                            }, failure: {(highResImageRequest, highResImageResponse, error) -> Void in})
                                                         })
                                                     } else {
                                                         print("Image was cached, no need to Fade it in!")
