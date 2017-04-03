@@ -33,7 +33,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![alt tag](https://raw.githubusercontent.com/sbrshkappa/MovieScoop/Master/MovieScoop.png
+![alt tag](https://raw.githubusercontent.com/sbrshkappa/MovieScoop/Master/MovieScoop.gif)
 
 GIF created with [EzGif](http://www.ezgif.com/video-to-gif/).
 
