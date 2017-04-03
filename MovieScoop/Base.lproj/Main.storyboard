@@ -54,7 +54,7 @@
                                             <outlet property="movieCellLabel" destination="C2b-e2-y9z" id="v8y-bx-cpy"/>
                                             <outlet property="movieCellOveriew" destination="jQO-mI-ec3" id="qAZ-DI-f2R"/>
                                             <outlet property="movieImageView" destination="dgD-Xh-bxF" id="BDu-cn-Pkx"/>
-                                            <segue destination="qoN-Jx-Ac5" kind="push" id="qh4-cD-dSJ"/>
+                                            <segue destination="qoN-Jx-Ac5" kind="push" identifier="TableViewSegue" id="qh4-cD-dSJ"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -78,29 +78,29 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="zrO-Ch-ghb">
-                                    <size key="itemSize" width="130" height="206"/>
+                                    <size key="itemSize" width="125" height="176"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="CollectionMovieCell" id="LcQ-Cf-74b" customClass="CollectionMovieCell" customModule="MovieScoop" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="125" height="206"/>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" misplaced="YES" reuseIdentifier="CollectionMovieCell" id="LcQ-Cf-74b" customClass="CollectionMovieCell" customModule="MovieScoop" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="125" height="176"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="125" height="206"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="125" height="176"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="S7p-do-uCF">
-                                                    <rect key="frame" x="0.0" y="0.0" width="130" height="206"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="S7p-do-uCF">
+                                                    <rect key="frame" x="0.0" y="0.0" width="125" height="176"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
                                             </subviews>
                                         </view>
-                                        <size key="customSize" width="125" height="206"/>
+                                        <size key="customSize" width="125" height="176"/>
                                         <connections>
                                             <outlet property="movieImageView" destination="S7p-do-uCF" id="qqg-5z-WdJ"/>
-                                            <segue destination="qoN-Jx-Ac5" kind="push" id="wlB-OG-c3s"/>
+                                            <segue destination="qoN-Jx-Ac5" kind="push" identifier="CollectionViewSegue" id="wlB-OG-c3s"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
