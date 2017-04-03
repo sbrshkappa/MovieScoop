@@ -43,7 +43,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         movieSearchBar.delegate = self
         
         refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
+        refreshControl.addTarget(self, action: #selector(self.refreshControlAction(refreshControl:)), for: UIControlEvents.valueChanged)
         movieTableView.insertSubview(refreshControl, at: 0)
         movieCollectionView.insertSubview(refreshControl, at: 0)
         
@@ -272,7 +272,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    func refreshControlAction(_ refreshControl: UIRefreshControl) {
+    func refreshControlAction(refreshControl: UIRefreshControl) {
+        networkErrorView.isHidden = true
         networkRequest()
         self.refreshControl.endRefreshing()
     }
@@ -291,10 +292,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             if let data = data {
                 MBProgressHUD.hide(for: self.view, animated: true)
                 if let responseDictionary = try!JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
-                    print("response: \(responseDictionary)")
+                    //print("response: \(responseDictionary)")
                     
                     self.movies = responseDictionary["results"] as! [NSDictionary]
                     self.filteredData = self.movies
+                    self.networkErrorView.isHidden = true
                     self.movieTableView.reloadData()
                     self.movieCollectionView.reloadData()
                 }

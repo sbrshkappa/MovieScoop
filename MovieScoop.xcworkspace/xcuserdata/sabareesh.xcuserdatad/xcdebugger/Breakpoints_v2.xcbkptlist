@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MovieScoop/MoviesViewController.swift"
-            timestampString = "512887397.142841"
+            timestampString = "512889516.259598"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "304"
-            endingLineNumber = "304"
+            startingLineNumber = "306"
+            endingLineNumber = "306"
             landmarkName = "networkRequest()"
             landmarkType = "7">
          </BreakpointContent>
